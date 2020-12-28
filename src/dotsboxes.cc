@@ -37,6 +37,7 @@ public:
 	int randomPlayout(double &ratio);					//will change the gameboard, so only use with copy...
 	bool checkIfBoxCompleted(int i, int j);
 	int getBoxSide(int i, int j, int side);
+	bool doGetFreeBox();											//does move to get free box if possible (returns true if it worked, false if there is no "free box")
 
 	bool horizontal[(maxSize+1) * maxSize];
 	bool vertical[(maxSize+1) * maxSize];
@@ -63,6 +64,7 @@ protected:
     Dotsboxes* game;
 public:
     virtual void doMove(){};
+		virtual ~Player(){};
 };
 
 Dotsboxes::Dotsboxes(){
@@ -172,6 +174,7 @@ int Dotsboxes::numberOfEmptyEdges()const{
 
 	return emptyEdges;
 }
+
 
 //Function that returns the number of boxes that contain the specific character
 int Dotsboxes::numberOfBoxes(char a)const{
@@ -334,7 +337,12 @@ bool Dotsboxes::doMove(int move, bool mc = false){
 return false;
 }
 
+
+
 void Dotsboxes::doRandomMove(bool mc = false){
+	// if(doGetFreeBox()){
+	// 	return;
+	// }
 	if(!doMove((rand() % numberOfEmptyEdges()), mc)){
 		std::cout << "er gaat iets heel erg fout in random move :'D" << std::endl;
 	}
@@ -345,9 +353,86 @@ int Dotsboxes::randomPlayout(double &ratio){
 	int result;
 	// std::cout << "dit is een playout" << std::endl;
 	while(numberOfEmptyEdges() > 0){
-		doRandomMove(true);
+		if(!doGetFreeBox())
+			doRandomMove(true);
 	}
 
 	getWinner(result, ratio);
 	return result;
+}
+
+bool Dotsboxes::doGetFreeBox(){
+	int sides = -1;
+	int up, right, left, down;
+	int checkUp, checkRight, checkLeft, checkDown;
+	int toCheckI = -1, toCheckJ= -1;
+	int toDoSide = -1; // 0 = up, 1 = right, 2 = down, 3 = left
+	int toDoMove = -1;
+	//try to finish a box
+	for(int i = 0; i < height; ++i){
+		for(int j = 0; j < width; ++j){
+			sides = 0;
+			up = getBoxSide(i, j, UP);
+			right = getBoxSide(i, j, RIGHT);
+			down = getBoxSide(i, j, DOWN);
+			left = getBoxSide(i, j, LEFT);
+			sides += ((int)(horizontal[up]) + (int)(horizontal[down])
+													+ (int)(vertical[right])
+													+ (int)(vertical[left]));
+
+			if(sides == 3){
+				if(horizontal[up] == false){
+					toCheckI = i - 1;
+					toCheckJ = j;
+					toDoSide = UP;
+				}
+				else if(horizontal[down] == false){
+					toCheckI = i + 1;
+					toCheckJ = j;
+					toDoSide = DOWN;
+				}
+				else if(vertical[right] == false){
+					toCheckI = i;
+					toCheckJ = j + 1;
+					toDoSide = RIGHT;
+				}
+				else if(vertical[left] == false){
+					toCheckI = i;
+					toCheckJ = j - 1;
+					toDoSide = LEFT;
+				}
+				else{
+					std::cout << "somethink went wronk in greedymove" << std::endl;
+					return false;
+				}
+
+				sides = 0;
+				if(toCheckI >= 0 && toCheckI < width && toCheckJ >= 0 && toCheckJ < height){
+					checkUp = getBoxSide(toCheckI, toCheckJ, UP);
+					checkRight = getBoxSide(toCheckI, toCheckJ, RIGHT);
+					checkDown = getBoxSide(toCheckI, toCheckJ, DOWN);
+					checkLeft = getBoxSide(toCheckI, toCheckJ, LEFT);
+					sides += ((int)(horizontal[checkUp]) + (int)(horizontal[checkDown])
+															+ (int)(vertical[checkRight])
+															+ (int)(vertical[checkLeft]));
+				}
+
+				if(sides == 2){
+					//do not do move, and continue
+				}
+				else{
+					//do move and return true;
+					toDoMove = getBoxSide(i, j, toDoSide);
+					if(toDoSide == UP || toDoSide == DOWN){
+						doCompleteMove(true, toDoMove);
+					}
+					else{
+						doCompleteMove(false, toDoMove);
+					}
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }

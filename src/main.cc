@@ -143,6 +143,11 @@ int main(int argc, char* argv[]){
 	for(int i = 0; i < numberOfGames; ++i){
 		turn = 0;
 		game->cleanBoard();
+    // game->doCompleteMove(true, 7);
+    // game->doCompleteMove(false, 9);
+    // game->doCompleteMove(false, 10);
+    // game->playerToMove = false;
+
 
 		do{
 			if(game->whois() == false){
@@ -169,12 +174,19 @@ int main(int argc, char* argv[]){
   		std::cout << "score = " << game->numberOfBoxes('A') << " - " << game->numberOfBoxes('B') << std::endl;
   		std::cout << "-----------------------end of game---------------------------" << std::endl;
     }
-		if(i % 10 == 0){
+		if(i % 10 == -1){ //pas aan als ik iets wil
 			std::cout << "done: " << i+1 << " games." << std::endl;
 		}
 	}
+  std::cout << "volgende command is uitgevoerd: ";
+  for (int i = 0; i < argc; ++i){
+    std::cout << " " << argv[i];
+  }
+  std::cout << std::endl;
   std::cout << "gepakt in eerste beurt: " << gepakt << "/" << numberOfGames  << std::endl;
   	std::cout << "player1: " << player1Wins << "  player2: " << player2Wins << "  ties: " << ties << std::endl;
+  delete player1;
+  delete player2;
 	delete game;
     return 0;
 }

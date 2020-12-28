@@ -1,0 +1,6 @@
+Welkom bij mijn kamertje verhuren programma.
+player1 = MCPlayer
+player2 = greedyPlayer
+volgende command is uitgevoerd:  ./programma 3 3 1000 1000 2 1 0 0
+gepakt in eerste beurt: 0/1000
+player1: 435  player2: 565  ties: 0

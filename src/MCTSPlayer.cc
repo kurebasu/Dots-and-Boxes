@@ -358,7 +358,6 @@ int MCTSPlayer::simulate(double &ratio){
 
 
 void MCTSPlayer::doMove(){
-
 	currentState = root;
 	int move = -1;
 	double ratio = INT_MIN;
