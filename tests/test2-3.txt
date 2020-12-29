@@ -3,4 +3,4 @@ player1 = MCPlayer
 player2 = MCTSPlayer
 volgende command is uitgevoerd:  ./programma 3 3 1000 1000 2 3 0 0
 gepakt in eerste beurt: 0/1000
-player1: 920  player2: 80  ties: 0
+player1: 906  player2: 94  ties: 0

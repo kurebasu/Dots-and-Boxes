@@ -3,4 +3,4 @@ player1 = greedyPlayer
 player2 = greedyPlayer
 volgende command is uitgevoerd:  ./programma 3 3 1000 1000 1 1 0 0
 gepakt in eerste beurt: 0/1000
-player1: 370  player2: 630  ties: 0
+player1: 348  player2: 652  ties: 0
