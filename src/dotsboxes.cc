@@ -353,7 +353,11 @@ int Dotsboxes::randomPlayout(double &ratio){
 	int result;
 	// std::cout << "dit is een playout" << std::endl;
 	while(numberOfEmptyEdges() > 0){
-		if(!doGetFreeBox())
+		if(gEnhancement){
+			if(!doGetFreeBox())
+				doRandomMove(true);
+		}
+		else
 			doRandomMove(true);
 	}
 

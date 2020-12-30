@@ -4,8 +4,9 @@
 *Last edit date: -
 */
 
- int gIterations = 1000;
- bool gMCTSprint      = true;
+int gIterations   = 1000;
+bool gMCTSprint   = true;
+bool gEnhancement = false;
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -58,7 +59,7 @@ void printRules(){
 
 void printError(){
 	std::cout << "hipity hoopid, are you stoopid? too little arguments" << std::endl;
-	std::cout << "expected: " << "./programma" << " [height] [width] [numberOfGames] [MC interations] [player1] [player2] [print] [printMCTStree0/1]" <<std::endl;
+	std::cout << "expected: " << "./programma" << " [height] [width] [numberOfGames] [MC interations] [player1] [player2] [print0/1] [printMCTStree0/1] [enhanched playout0/1]" <<std::endl;
   std::cout << "players are 0-4: Random(0), Greedy(1), MC(2), MCTS(3)" <<std::endl;
 }
 
@@ -76,7 +77,7 @@ void processResult(int result, int &player1Wins, int &player2Wins, int &ties){
 
 int main(int argc, char* argv[]){
 	printRules();
-	if(argc != 9){
+	if(argc != 10){
 		printError();
 		return 1;
 	}
@@ -91,6 +92,7 @@ int main(int argc, char* argv[]){
   int whichPlayer2 = atoi (argv[6]);
   bool print = atoi (argv[7]);
   gMCTSprint = atoi (argv[8]);
+  gEnhancement = atoi(argv[9]);
 
 
   Player* player1;
