@@ -1,0 +1,16 @@
+Welkom bij mijn kamertje verhuren programma.
+player1 = MCPlayer
+player2 = greedyPlayer
+done: 2 games.
+done: 102 games.
+done: 202 games.
+done: 302 games.
+done: 402 games.
+done: 502 games.
+done: 602 games.
+done: 702 games.
+done: 802 games.
+done: 902 games.
+volgende command is uitgevoerd:  ./programma 3 3 1000 1000 2 1 0 0 1 2
+gepakt in eerste beurt: 0/1000
+player1: 425  player2: 575  ties: 0

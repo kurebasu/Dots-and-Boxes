@@ -4,9 +4,10 @@
 *Last edit date: -
 */
 
-int gIterations   = 1000;
-bool gMCTSprint   = true;
-bool gEnhancement = false;
+int   gIterations   = 1000;
+bool  gMCTSprint    = true;
+bool  gEnhancement  = false;
+int   gMove         = 0;
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -59,8 +60,9 @@ void printRules(){
 
 void printError(){
 	std::cout << "hipity hoopid, are you stoopid? too little arguments" << std::endl;
-	std::cout << "expected: " << "./programma" << " [height] [width] [numberOfGames] [MC interations] [player1] [player2] [print0/1] [printMCTStree0/1] [enhanched playout0/1]" <<std::endl;
+	std::cout << "expected: " << "./programma" << " [height] [width] [numberOfGames] [MC interations] [player1[0-3]] [player2[0-3]] [print0/1] [printMCTStree0/1] [enhanched playout0/1] [move selection[0-2]]" <<std::endl;
   std::cout << "players are 0-4: Random(0), Greedy(1), MC(2), MCTS(3)" <<std::endl;
+  std::cout << "move selection: UCT(0), MAX CHILD(1), ROBUST CHILD(2)" << std::endl;
 }
 
 void processResult(int result, int &player1Wins, int &player2Wins, int &ties){
@@ -77,22 +79,29 @@ void processResult(int result, int &player1Wins, int &player2Wins, int &ties){
 
 int main(int argc, char* argv[]){
 	printRules();
-	if(argc != 10){
+	if(argc != 11){
 		printError();
 		return 1;
 	}
 	srand(time(NULL));
 	int result = -1;
 
-	int rows = atoi (argv[1]);
-	int columns = atoi (argv[2]);
+	int rows          = atoi (argv[1]);
+	int columns       = atoi (argv[2]);
 	int numberOfGames = atoi (argv[3]);
-	gIterations = atoi (argv[4]);
-  int whichPlayer1 = atoi (argv[5]);
-  int whichPlayer2 = atoi (argv[6]);
-  bool print = atoi (argv[7]);
-  gMCTSprint = atoi (argv[8]);
-  gEnhancement = atoi(argv[9]);
+	gIterations       = atoi (argv[4]);
+  int whichPlayer1  = atoi (argv[5]);
+  int whichPlayer2  = atoi (argv[6]);
+  bool print        = atoi (argv[7]);
+  gMCTSprint        = atoi (argv[8]);
+  gEnhancement      = atoi(argv[9]);
+  gMove             = atoi(argv[10]);
+
+  if(gMove < 0 || gMove > 2){
+    printError();
+    std::cout << "wrong gMove entered, enter between 0-2" << std::endl;
+    return 1;
+  }
 
 
   Player* player1;
@@ -144,14 +153,22 @@ int main(int argc, char* argv[]){
 	int turn = 0;
 	for(int i = 0; i < numberOfGames; ++i){
 		turn = 0;
-		game->cleanBoard();
-    // game->doCompleteMove(true, 7);
-    // game->doCompleteMove(false, 9);
-    // game->doCompleteMove(false, 10);
-    // game->playerToMove = false;
+		//Berlekamp situation 3.3
+		game->horizontal[0]  = true;
+		game->horizontal[1]  = true;
+		game->horizontal[2]  = true;
 
+		game->vertical[1]    = true;
+		game->vertical[3]    = true;
+		game->vertical[4]    = true;
+		game->vertical[5]    = true;
+		game->vertical[6]    = true;
+		game->vertical[7]    = true;
+		game->vertical[9]    = true;
+		game->vertical[10]    = true;
+		game->playerToMove   = false;
 
-		do{
+		// do{
 			if(game->whois() == false){
 				player1->doMove();
 			}
@@ -167,7 +184,7 @@ int main(int argc, char* argv[]){
       }
 
       turn++;
-		}while(game->numberOfEmptyEdges() > 0);
+		// }while(game->numberOfEmptyEdges() > 0);
 
     game->getWinner(result, unused);
     processResult(result, player1Wins, player2Wins, ties);
@@ -176,7 +193,7 @@ int main(int argc, char* argv[]){
   		std::cout << "score = " << game->numberOfBoxes('A') << " - " << game->numberOfBoxes('B') << std::endl;
   		std::cout << "-----------------------end of game---------------------------" << std::endl;
     }
-		if(i % 10 == -1){ //pas aan als ik iets wil
+		if(i % 100 == 1){ //pas aan als ik iets wil
 			std::cout << "done: " << i+1 << " games." << std::endl;
 		}
 	}
@@ -226,3 +243,54 @@ int main(int argc, char* argv[]){
 // game->doCompleteMove(false, 0);
 // game->doCompleteMove(false, 1);
 // game->playerToMove = false;
+
+// //Berlekamp situation 3.1
+// game->cleanBoard();
+// game->horizontal[0]  = true;
+// game->horizontal[1]  = true;
+// game->horizontal[4]  = true;
+// game->horizontal[5]  = true;
+// game->horizontal[10]  = true;
+//
+// game->vertical[0]    = true;
+// game->vertical[4]    = true;
+// game->vertical[5]    = true;
+// game->vertical[9]    = true;
+// game->vertical[11]   = true;
+// game->playerToMove   = false;
+//
+//
+//
+// //Berlekamp situation 3.2
+// game->cleanBoard();
+// game->horizontal[0]  = true;
+// game->horizontal[1]  = true;
+// game->horizontal[2]  = true;
+//
+// game->vertical[1]    = true;
+// game->vertical[3]    = true;
+// game->vertical[4]    = true;
+// game->vertical[5]    = true;
+// game->vertical[6]    = true;
+// game->vertical[7]    = true;
+// game->vertical[9]    = true;
+// game->vertical[10]    = true;
+// game->vertical[11]    = true;
+// game->playerToMove   = false;
+
+//
+//
+// //Berlekamp situation 3.3
+// game->horizontal[0]  = true;
+// game->horizontal[1]  = true;
+// game->horizontal[2]  = true;
+//
+// game->vertical[1]    = true;
+// game->vertical[3]    = true;
+// game->vertical[4]    = true;
+// game->vertical[5]    = true;
+// game->vertical[6]    = true;
+// game->vertical[7]    = true;
+// game->vertical[9]    = true;
+// game->vertical[10]    = true;
+// game->playerToMove   = false;

@@ -30,10 +30,14 @@ public:
 	int getTies()	{return ties;}
 	int getVisits() {return wins+losses+ties;}
 
-	int 		maxChild();
+	int 		maxChild(bool justSelection = true);
+
+	void 		printAllChild();
 	double 	calcUCB1Value();
 	bool 		isConsistent();
 	void 		printTree(bool first = true);
+	void 		printRoot(bool first = true);
+
 
 
 
@@ -94,51 +98,62 @@ bool Node::isLeafNode(){
 	return !(bool)(children.size());
 }
 
-int Node::maxChild(){
+int Node::maxChild(bool justSelection){
 	double maxValue = INT_MIN;
 	double currentValue = INT_MIN;
 	int move = 0;
 	int bestMove = INT_MIN;
+	int visits = 0;
 	// if(this->isRoot){
 		// std::cout << "begin maxchild" << std::endl;
 		// std::cout << "#children = " << children.size() << std::endl;
 		// printTree();
 	// }
 	for(Node* node : children){
-		currentValue = node->calcUCB1Value();
-		if(this->isRoot){
-			// std::cout << "currentValue for node: " << node->nodeNumber << " = " << currentValue << std::endl;
+		if(gMove == 0 || justSelection){//UCB1
+			currentValue = node->calcUCB1Value();
+		}
+		else if(gMove == 1){//MAX CHILD
+			visits = node->getVisits();
+			if (visits == 0){
+				visits = 1; //make sure we don't divide by 0
+			}
+			currentValue = double((double)(node->getWins())/(double)(visits));
+		}
+		else if(gMove == 2){//ROBUST CHILD
+			currentValue = node->getVisits();
 		}
 		if(currentValue > maxValue){
 			bestMove = move;
 			maxValue = currentValue;
 		}
-		move++;
+		++move;
 	}
 	// std::cout << std::endl;
 	return bestMove;
 }
 
-// double Node::calcUCB1Value(){
-// 	double C = 0.00002; //constant value
-// 	int Wi = wins;
-// 	int ni = getVisits();
-// 	int Ni = -10;
-// 	double UCB1 = 0;
-// 	if(parent != NULL) //which it should never be...
-// 		Ni = parent->getVisits();
-//
-//
-//   if(ni != 0){
-// 		double Vi = Wi / ni;
-//
-// 		UCB1 = Vi + C * sqrt( (log(Ni) / ni) );
-// 	}
-// 	else{
-// 		UCB1 = INT_MAX;
-// 	}
-// 	return UCB1;
-// }
+void Node::printAllChild(){
+	double currentValue = INT_MIN;
+	int i = 0;
+	int visits = 0;
+	for(Node* node : children){
+		if(gMove == 0){//UCB1
+			currentValue = node->calcUCB1Value();
+		}
+		else if(gMove == 1){//MAX CHILD
+			visits = node->getVisits();
+			if (visits == 0){
+				visits = 1; //make sure we don't divide by 0
+			}
+			currentValue = (double)(node->getWins())/(double)(visits);
+		}
+		else if(gMove == 2){//ROBUST CHILD
+			currentValue = node->getVisits();
+		}
+		std::cout << "currentValue for child " << i++ << " : " << currentValue <<std::endl;
+	}
+}
 
 double Node::calcUCB1Value(){
 	double C = 0.4; //constant value
@@ -243,14 +258,14 @@ void Node::printTree(bool first){
 	}
 
 	//print line for the node itself
-	if(getVisits() > 0){ //if it is not empty
+	// if(getVisits() > 0){ //if it is not empty
 		std::cout << nodeNumber << " [label=\"" << wins << "/" << losses << "/" << ties << "\" color=black, "
 							<< "fontcolor=black, fontsize=12, shape=circle]" << std::endl;
 		//print line for connection with parent:
 		if(parent!= NULL){
 			std::cout << parent->nodeNumber << " -> " << nodeNumber << ";" << std::endl;
 		}
-	}
+	// }
 
 
 	// std::cout << "myNumber: " << nodeNumber <<std::endl;
@@ -275,6 +290,47 @@ void Node::printTree(bool first){
 	}
 
 }
+
+void Node::printRoot(bool first){
+	Node* cParent = parent;
+	if(first){
+		std::cout << "start of print tree:" << std::endl;
+		std::cout << "digraph test{" << std::endl;
+	}
+
+	//print line for the node itself
+	if(getVisits() > 0){ //if it is not empty
+		std::cout << nodeNumber << " [label=\"" << wins << "/" << losses << "/" << ties << "\" color=black, "
+							<< "fontcolor=black, fontsize=12, shape=circle]" << std::endl;
+		//print line for connection with parent:
+		if(parent!= NULL){
+			std::cout << parent->nodeNumber << " -> " << nodeNumber << ";" << std::endl;
+		}
+	}
+
+
+	// std::cout << "myNumber: " << nodeNumber <<std::endl;
+	//
+	// while(cParent != NULL){
+	// 	std::cout << " child of: " << cParent->nodeNumber;
+	// 	cParent = cParent->parent;
+	// }
+	//
+	// std::cout << std::endl << "wins :" << wins << " losses: " << losses << " ties: " << ties << std::endl;
+	//
+	// std::cout << std::endl;
+	if(first)
+		for (Node* node : children){
+			node->printRoot(false);
+		}
+
+	if(first){
+		std::cout << "}" << std::endl;
+		std::cout << "end of print tree:" << std::endl;
+	}
+
+}
+
 
 
 
@@ -320,7 +376,7 @@ void MCTSPlayer::select(){
 	currentState = root;
 	int move = -1;
 	while(!currentState->isLeafNode()){
-		move = currentState->maxChild();
+		move = currentState->maxChild(true);
 		currentState = currentState->children[move];
 		gameCopy.doMove(move, true);
 	}
@@ -395,9 +451,9 @@ void MCTSPlayer::doMove(){
 	}
 	if(gMCTSprint == true){
 		root->printTree();
-		std::cout << "the best move would be:" << root->maxChild() << std::endl;
 		std::cout << "einde beurt-----------------------------------------------" << std::endl;
-
+		root->printRoot();
+		root->printAllChild();
 	}
 
 	if(!root->isConsistent()){
@@ -406,8 +462,10 @@ void MCTSPlayer::doMove(){
 	// 	//goto: select node
 	// }
 	if(root->children[0] != NULL){
-		bestMove = root->maxChild();
+		bestMove = root->maxChild(false);
 	}
+
+
 	game->doMove(bestMove,0);
 	currentState = root;
 	cleanTree();

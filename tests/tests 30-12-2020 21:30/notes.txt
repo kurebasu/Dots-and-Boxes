@@ -1,0 +1,6 @@
+names for files are given as follows:
+test + player1 + player2 + enhancement(0/1) + selection type (1/2) (for max child and robust child)
+
+so the name: test3.0.0.1 
+means that is it the test for the MCTS(3) player vs random(0) player without enhancement(0) with the max child selection(1) as selection type for the MCTS algorithm.
+

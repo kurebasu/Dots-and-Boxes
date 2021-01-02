@@ -1,0 +1,20 @@
+player1 vs player2,standard max child,standard robust child,enhanced max child,enhanced robust child
+Random vs Random,0.498,,0.523,
+Random vs Greedy,0.004,,0.003,
+Random vs MC,0.1,,0.001,
+Random vs MCTS,0.177,0.174,0.037,0.03
+,,,,
+Greedy vs Random,0.996,,0.996,
+Greedy vs Greedy,0.37,,0.37,
+Greedy vs MC,0.991,,0.238,
+Greedy vs MCTS,0.968,0.983,0.768,0.745
+,,,,
+MC vs Random,0.911,,0.993,
+MC vs Greedy,0.026,,0.403,
+MC vs MC,0.521,,0.418,
+MC vs MCTS,0.522,0.5,0.849,0.84
+,,,,
+MCTS vs Random,0.865,0.873,0.95,0.961
+MCTS vs Greedy,0.006,0.004,0.034,0.036
+MCTS vs MC,0.476,0.492,0.051,0.048
+MCTS vs MCTS,0.523,0.519,0.326,0.327
