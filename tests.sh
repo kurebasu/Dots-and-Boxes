@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#Shell script die alle tests in een keer uitvoert, programma moet al gebuild zijn.
 # ./programma [height] [width] [numberOfGames] [MC interations] [player1] [player2] [print] [printMCTStree0/1]
 # players are 0-4: Random(0), Greedy(1), MC(2), MCTS(3)
 
